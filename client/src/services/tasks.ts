@@ -15,10 +15,41 @@ export const useTasks = (params?: Record<string, any>) => {
 export const useCreateTask = () => {
   const qc = useQueryClient()
   return useMutation<Task, Error, Partial<Task>>({
-    mutationFn: async (payload: Partial<Task>) => {
+    mutationFn: async (payload) => {
       const res = await api.post('/tasks', payload)
       return res.data as Task
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+  })
+}
+
+export const useUpdateTask = () => {
+  const qc = useQueryClient()
+  return useMutation<Task, Error, { id: string; data: Partial<Task> }>({
+    mutationFn: async ({ id, data }) => {
+      const res = await api.put(`/tasks/${id}`, data)
+      return res.data as Task
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+  })
+}
+
+export const useDeleteTask = () => {
+  const qc = useQueryClient()
+  return useMutation<void, Error, string>({
+    mutationFn: async (id) => {
+      await api.delete(`/tasks/${id}`)
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+  })
+}
+
+export const useUsers = () => {
+  return useQuery<{ id: string; name: string; email: string }[], Error>({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const res = await api.get('/auth/users')
+      return res.data
+    },
   })
 }
