@@ -4,8 +4,12 @@ import { registerSchema, loginSchema } from '../validations/auth.validation'
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data = registerSchema.parse(req.body)
-    const result = await authService.register(data)
+    const parsed = registerSchema.safeParse(req.body)
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Validation error', details: parsed.error.flatten() })
+      return
+    }
+    const result = await authService.register(parsed.data)
     res.status(201).json(result)
   } catch (err) {
     next(err)
@@ -14,8 +18,12 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data = loginSchema.parse(req.body)
-    const result = await authService.login(data.email, data.password)
+    const parsed = loginSchema.safeParse(req.body)
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Validation error', details: parsed.error.flatten() })
+      return
+    }
+    const result = await authService.login(parsed.data.email, parsed.data.password)
     res.json(result)
   } catch (err) {
     next(err)
@@ -24,9 +32,17 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
 export const me = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = (req as any).user
-    if (!user) return res.status(401).json({ error: 'Unauthorized' })
-    const result = await authService.me(user.sub)
+    const userId = (req as any).user.sub
+    const result = await authService.me(userId)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const listUsers = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await authService.listUsers()
     res.json(result)
   } catch (err) {
     next(err)
