@@ -1,10 +1,11 @@
 {
   "name": "tms-server",
   "version": "1.0.0",
-"scripts": {
+
+  "scripts": {
   "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-  "build": "prisma generate && prisma db push && tsc",
-  "start": "node dist/src/server.js",
+  "build": "prisma generate && tsc", 
+  "start": "prisma db push && node dist/src/server.js",
   "seed": "ts-node src/prisma/seed.ts"
 },
   "dependencies": {
@@ -22,6 +23,7 @@
     "@types/express": "^4.17.25",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.14.0",
+    "dotenv-cli": "^11.0.0",
     "prisma": "^5.14.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
