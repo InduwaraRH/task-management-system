@@ -4,6 +4,8 @@ import { useTasks, useDeleteTask } from '../../services/tasks'
 import { Task } from '../../types'
 import TaskModal from '../../components/common/TaskModal'
 import Button from '../../components/common/Button'
+import StatusDropdown from '../../components/common/StatusDropdown'
+import { useNavigate } from 'react-router-dom'
 
 const priorityConfig = {
   LOW: { label: 'Low', className: 'bg-slate-700 text-slate-300' },
@@ -51,6 +53,7 @@ const DashboardPage = () => {
   const [status, setStatus] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const navigate = useNavigate()
 
   const filters = {
     ...(search && { search }),
@@ -220,13 +223,20 @@ const DashboardPage = () => {
                             <div className="max-w-xs">
                               <div className="flex items-center gap-2">
                                 {task.priority === 'HIGH' && <span className="h-2 w-2 rounded-full bg-rose-400" />}
-                                <div className="font-medium text-white">{task.title}</div>
+                                <div
+                                    className="font-medium text-white hover:text-cyan-300 cursor-pointer transition-colors"
+                                    onClick={() => navigate(`/tasks/${task.id}`)}
+                                  >
+                                    {task.title}
+                                  </div>
                               </div>
                               {task.description && <div className="mt-1 max-w-2xl truncate text-sm text-slate-400">{task.description}</div>}
                             </div>
                           </td>
                           <td className="px-5 py-4"><Badge type="priority" value={task.priority} /></td>
-                          <td className="px-5 py-4"><Badge type="status" value={task.status} /></td>
+                          <td className="px-5 py-4">
+                              <StatusDropdown taskId={task.id} currentStatus={task.status} />
+                          </td>
                           <td className="px-5 py-4 text-sm text-slate-300">{(task as any).assignedTo?.name || 'Unassigned'}</td>
                           <td className={`px-5 py-4 text-sm ${overdue ? 'text-rose-300' : 'text-slate-300'}`}>
                             <div className="flex items-center gap-2">

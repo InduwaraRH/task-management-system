@@ -4,6 +4,7 @@ import LoginPage from './pages/Login'
 import RegisterPage from './pages/Register'
 import DashboardPage from './pages/Dashboard'
 import NotFoundPage from './pages/NotFound'
+import TaskDetailPage from './pages/TaskDetail'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth()
@@ -31,6 +32,11 @@ const App = () => {
       } />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<NotFoundPage />} />
+      <Route path="/tasks/:id" element={
+  <ProtectedRoute>
+    <TaskDetailPage />
+  </ProtectedRoute>
+} />
     </Routes>
   )
 }
