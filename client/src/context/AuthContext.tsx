@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { User } from '../types'
 import api from '../lib/api'
+import toast from 'react-hot-toast'
 
 interface AuthContextType {
   user: User | null
@@ -28,22 +29,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .finally(() => setIsLoading(false))
   }, [])
 
-  const login = async (email: string, password: string) => {
-    const res = await api.post('/auth/login', { email, password })
-    localStorage.setItem('token', res.data.token)
-    setUser(res.data.user)
-  }
+const login = async (email: string, password: string) => {
+  const res = await api.post('/auth/login', { email, password })
+  localStorage.setItem('token', res.data.token)
+  setUser(res.data.user)
+  toast.success(`Welcome back, ${res.data.user.name}!`)
+}
 
-  const register = async (name: string, email: string, password: string, role = 'USER') => {
-    const res = await api.post('/auth/register', { name, email, password, role })
-    localStorage.setItem('token', res.data.token)
-    setUser(res.data.user)
-  }
+const register = async (name: string, email: string, password: string, role = 'USER') => {
+  const res = await api.post('/auth/register', { name, email, password, role })
+  localStorage.setItem('token', res.data.token)
+  setUser(res.data.user)
+  toast.success(`Account created! Welcome, ${res.data.user.name}!`)
+}
 
-  const logout = () => {
-    localStorage.removeItem('token')
-    setUser(null)
-  }
+const logout = () => {
+  localStorage.removeItem('token')
+  setUser(null)
+  toast.success('Signed out')
+}
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>

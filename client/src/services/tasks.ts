@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../lib/api'
 import { Task } from '../types'
+import toast from 'react-hot-toast'
 
 export const useTasks = (params?: Record<string, any>) => {
   return useQuery<Task[], Error>({
@@ -19,7 +20,11 @@ export const useCreateTask = () => {
       const res = await api.post('/tasks', payload)
       return res.data as Task
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks'] })
+      toast.success('Task created')
+    },
+    onError: () => toast.error('Failed to create task'),
   })
 }
 
@@ -30,7 +35,12 @@ export const useUpdateTask = () => {
       const res = await api.put(`/tasks/${id}`, data)
       return res.data as Task
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks'] })
+      qc.invalidateQueries({ queryKey: ['task'] })
+      toast.success('Task updated')
+    },
+    onError: () => toast.error('Failed to update task'),
   })
 }
 
@@ -40,7 +50,11 @@ export const useDeleteTask = () => {
     mutationFn: async (id) => {
       await api.delete(`/tasks/${id}`)
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks'] })
+      toast.success('Task deleted')
+    },
+    onError: () => toast.error('Failed to delete task'),
   })
 }
 
