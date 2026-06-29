@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Task } from '../../types'
 import { useCreateTask, useUpdateTask, useUsers } from '../../services/tasks'
+import Button from './Button'
 
 interface Props {
   task?: Task | null
@@ -58,48 +59,50 @@ const TaskModal = ({ task, onClose }: Props) => {
   const isSubmitting = createTask.isPending || updateTask.isPending
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-800 rounded-xl w-full max-w-md shadow-2xl">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-          <h2 className="font-semibold text-white">{isEditing ? 'Edit Task' : 'New Task'}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors text-xl leading-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+      <div className="surface-panel w-full max-w-2xl overflow-hidden rounded-3xl">
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-cyan-300/80">Task editor</p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">{isEditing ? 'Edit task' : 'Create a task'}</h2>
+            <p className="mt-1 text-sm text-slate-400">Capture the work once, then assign and track it clearly.</p>
+          </div>
+          <button onClick={onClose} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-2xl leading-none text-slate-300 hover:bg-white/10 hover:text-white">
             ×
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+        <form onSubmit={handleSubmit} className="max-h-[80vh] space-y-5 overflow-y-auto px-6 py-5">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Title <span className="text-red-400">*</span></label>
+            <label className="label-base">Title <span className="text-rose-400">*</span></label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              className="input-base"
               placeholder="Task title"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+            <label className="label-base">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+              className="input-base resize-none"
               placeholder="Optional description"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Priority</label>
+              <label className="label-base">Priority</label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="input-base"
               >
                 <option value="LOW">Low</option>
                 <option value="MEDIUM">Medium</option>
@@ -107,11 +110,11 @@ const TaskModal = ({ task, onClose }: Props) => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
+              <label className="label-base">Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="input-base"
               >
                 <option value="OPEN">Open</option>
                 <option value="IN_PROGRESS">In Progress</option>
@@ -121,22 +124,22 @@ const TaskModal = ({ task, onClose }: Props) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Due date</label>
+              <label className="label-base">Due date</label>
               <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="input-base"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Assign to</label>
+              <label className="label-base">Assign to</label>
               <select
                 value={assignedToId}
                 onChange={(e) => setAssignedToId(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="input-base"
               >
                 <option value="">Unassigned</option>
                 {users?.map((u) => (
@@ -147,26 +150,26 @@ const TaskModal = ({ task, onClose }: Props) => {
           </div>
 
           {error && (
-            <p className="text-red-400 text-sm bg-red-900/20 border border-red-800 rounded-lg px-3 py-2">
+            <p className="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
               {error}
             </p>
           )}
 
-          <div className="flex justify-end gap-3 pt-2">
-            <button
+          <div className="flex flex-col-reverse gap-3 border-t border-white/10 pt-4 sm:flex-row sm:justify-end">
+            <Button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+              variant="ghost"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              variant="primary"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
             >
               {isSubmitting ? 'Saving...' : isEditing ? 'Save changes' : 'Create task'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

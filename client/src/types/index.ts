@@ -10,7 +10,7 @@ export interface Task {
   title: string
   description?: string
   priority: 'LOW' | 'MEDIUM' | 'HIGH'
-  status: 'OPEN' | 'IN_PROGRESS' | 'DONE'
+  status: 'OPEN' | 'IN_PROGRESS' | 'TESTING' | 'DONE'
   dueDate?: string
   createdBy: string
   assignedTo?: string
