@@ -4,8 +4,8 @@ A full-stack task management application with role-based access control, built a
 
 ## Live Demo
 
-- **Frontend:** _your Vercel URL here_
-- **Backend API:** _your Railway/Render URL here_
+- **Frontend:** [https://task-management-system-ffxp.vercel.app/]
+- **Backend API:** [https://task-management-system-production-c1a2.up.railway.app/]
 
 ### Demo Credentials
 
