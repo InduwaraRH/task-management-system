@@ -6,6 +6,7 @@ import TaskModal from '../../components/common/TaskModal'
 import Button from '../../components/common/Button'
 import StatusDropdown from '../../components/common/StatusDropdown'
 import { useNavigate } from 'react-router-dom'
+import ConfirmDialog from '../../components/common/ConfirmDialog'
 
 const priorityConfig = {
   LOW: { label: 'Low', className: 'bg-slate-700 text-slate-300' },
@@ -53,6 +54,8 @@ const DashboardPage = () => {
   const [status, setStatus] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const navigate = useNavigate()
 
   const filters = {
@@ -84,9 +87,12 @@ const DashboardPage = () => {
     return due >= today && due <= inSevenDays
   }).length
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this task?')) return
-    await deleteTask.mutateAsync(id)
+  const handleDelete = async () => {
+    if (!deletingId) return
+    setDeleteLoading(true)
+    await deleteTask.mutateAsync(deletingId)
+    setDeleteLoading(false)
+    setDeletingId(null)
   }
 
   return (
@@ -249,7 +255,7 @@ const DashboardPage = () => {
                               <Button variant="ghost" onClick={() => { setEditingTask(task); setShowModal(true) }} className="h-8 px-3 py-1 text-xs">
                                 Edit
                               </Button>
-                              <Button variant="danger" onClick={() => handleDelete(task.id)} className="h-8 px-3 py-1 text-xs">
+                              <Button variant="danger" onClick={() => setDeletingId(task.id)} className="h-8 px-3 py-1 text-xs">
                                 Delete
                               </Button>
                             </div>
@@ -293,7 +299,7 @@ const DashboardPage = () => {
                         <Button variant="ghost" onClick={() => { setEditingTask(task); setShowModal(true) }} className="h-9 flex-1 px-3 py-2 text-xs">
                           Edit
                         </Button>
-                        <Button variant="danger" onClick={() => handleDelete(task.id)} className="h-9 flex-1 px-3 py-2 text-xs">
+                        <Button variant="danger" onClick={() => setDeletingId(task.id)} className="h-9 flex-1 px-3 py-2 text-xs">
                           Delete
                         </Button>
                       </div>
@@ -312,6 +318,16 @@ const DashboardPage = () => {
           onClose={() => { setShowModal(false); setEditingTask(null) }}
         />
       )}
+          {deletingId && (
+      <ConfirmDialog
+        title="Delete task"
+        message="This action cannot be undone. The task will be permanently removed."
+        confirmLabel="Delete task"
+        loading={deleteLoading}
+        onConfirm={handleDelete}
+        onCancel={() => setDeletingId(null)}
+      />
+    )}
     </div>
   )
 }

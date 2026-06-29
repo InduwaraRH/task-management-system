@@ -8,6 +8,7 @@ import { useDeleteTask } from '../../services/tasks'
 import TaskModal from '../../components/common/TaskModal'
 import StatusDropdown from '../../components/common/StatusDropdown'
 import Button from '../../components/common/Button'
+import ConfirmDialog from '../../components/common/ConfirmDialog'
 
 const priorityConfig = {
   LOW:    { label: 'Low',    className: 'bg-slate-700 text-slate-300' },
@@ -21,6 +22,8 @@ const TaskDetailPage = () => {
   const { user } = useAuth()
   const deleteTask = useDeleteTask()
   const [showEdit, setShowEdit] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+const [deleteLoading, setDeleteLoading] = useState(false)
 
   const { data: task, isLoading, error } = useQuery<Task>({
     queryKey: ['task', id],
@@ -32,10 +35,10 @@ const TaskDetailPage = () => {
   })
 
   const handleDelete = async () => {
-    if (!confirm('Delete this task?')) return
-    await deleteTask.mutateAsync(id!)
-    navigate('/dashboard')
-  }
+  setDeleteLoading(true)
+  await deleteTask.mutateAsync(id!)
+  navigate('/dashboard')
+}
 
   if (isLoading) return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -48,8 +51,8 @@ const TaskDetailPage = () => {
       <div className="text-center">
         <p className="text-lg font-medium text-white">Task not found</p>
         <button onClick={() => navigate('/dashboard')} className="mt-3 text-sm text-cyan-400 hover:text-cyan-300">
-          Back to dashboard
-        </button>
+            Back to dashboard
+            </button>
       </div>
     </div>
   )
@@ -73,7 +76,7 @@ const TaskDetailPage = () => {
               <Button variant="ghost" onClick={() => setShowEdit(true)} className="text-xs px-3 py-1.5">
                 Edit
               </Button>
-              <Button variant="danger" onClick={handleDelete} className="text-xs px-3 py-1.5">
+              <Button variant="danger" onClick={() => setShowConfirm(true)} className="text-xs px-3 py-1.5">
                 Delete
               </Button>
             </div>
@@ -131,6 +134,16 @@ const TaskDetailPage = () => {
           onClose={() => setShowEdit(false)}
         />
       )}
+      {showConfirm && (
+        <ConfirmDialog
+        title="Delete task"
+        message="This action cannot be undone. The task will be permanently removed."
+        confirmLabel="Delete task"
+        loading={deleteLoading}
+        onConfirm={handleDelete}
+        onCancel={() => setShowConfirm(false)}
+        />
+        )}
     </div>
   )
 }
