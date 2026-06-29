@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useTasks, useDeleteTask } from '../../services/tasks'
 import { Task } from '../../types'
+import TaskModal from '../../components/common/TaskModal'
 
 const priorityConfig = {
   LOW:    { label: 'Low',    className: 'bg-slate-700 text-slate-300' },
@@ -197,17 +198,12 @@ const DashboardPage = () => {
         )}
       </main>
 
-      {/* Modal placeholder — replaced in next commit */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md">
-            <p className="text-white text-sm">Task form coming in next commit...</p>
-            <button onClick={() => setShowModal(false)} className="mt-4 text-sm text-gray-400 hover:text-white">
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+{showModal && (
+  <TaskModal
+    task={editingTask}
+    onClose={() => { setShowModal(false); setEditingTask(null) }}
+  />
+)}
     </div>
   )
 }
